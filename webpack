@@ -1,0 +1,58 @@
+/*eslint-disable no-console*/
+console.log("BUILD ENVIRONMENT : " + process.env.NODE_ENV);
+var webpack = require('webpack');
+var path = require('path');
+
+const imports = {
+  dev: ['local','int'].includes(process.env.NODE_ENV),
+  ExtractTextPlugin : require("extract-text-webpack-plugin"),
+  HtmlWebpackPlugin : require('html-webpack-plugin'),
+  DashboardPlugin : require('webpack-dashboard/plugin'),
+  BUILD_DIR : path.resolve(__dirname, '../src/client/public'),
+  APP_DIR : path.resolve(__dirname, '../src/client/app'),
+  CSS_DIR : path.resolve(__dirname, '../src/client/app/css')
+}
+
+const entry = require('./webpack/entry.js')(imports);
+const rules = require('./webpack/rules.js')(imports);
+
+var config = {
+  entry,
+  output: {
+    path: imports.BUILD_DIR,
+    filename: 'js/bundle.js',
+    publicPath: '/' //Gotta give the hot loader a file directory
+  },
+  module: { rules },
+  plugins: [
+    // Bundle our css into one super css file.
+    new imports.ExtractTextPlugin({filename: "css/bundle.css"}),
+    // This allows us to use webpack-dev-dashboard, a nice HUD for development
+    new imports.DashboardPlugin(),
+    // Generates our HTML file
+    new imports.HtmlWebpackPlugin({
+      template: imports.APP_DIR + '/index.template.ejs',
+      filename: imports.BUILD_DIR + '/index.html',
+      inject: false,
+      csslocation: '"/css/bundle.css"',
+      jslocation: '"/js/bundle.js"',
+      gitversion: 'local'
+    }),
+    // Enables Hot Module Replacement
+    new webpack.HotModuleReplacementPlugin(),
+    // Prints readable module names in the browser console on HMR updates
+    new webpack.NamedModulesPlugin()
+  ],
+  resolve: require('./webpack/resolve.js')(imports),
+  devtool: 'inline-source-map',
+  devServer: {
+    host: '127.0.0.1',
+    inline: true,
+    historyApiFallback: true,
+    contentBase: imports.BUILD_DIR,
+    publicPath: '/', //And there's that directory again!
+    hot: true //ðŸ”¥ðŸ”¥ðŸ”¥
+  }
+};
+
+module.exports = config;
