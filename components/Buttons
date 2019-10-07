@@ -1,0 +1,87 @@
+/**
+ * These components are used for formatting, arrangement and generation of buttons
+ * 
+ * @module Common/Button Components
+ */
+
+//Node Modules
+import React from 'react';
+import PropTypes from 'prop-types';
+import Link from 'react-router/lib/Link';
+
+//CSS
+import './buttons.css';
+
+export {
+  ButtonToolbar,
+  ButtonGroup,
+  Button
+}
+
+/**
+ * Button Toolbar
+ * 
+ * Formats a group of button groups to be justified space between
+ * 
+ * @param {Object} props - Object Props
+ * @param {JSX.Element} props.children - Children Objects, we recommend you use 
+ *  ButtonGroups
+ */
+const ButtonToolbar  = ({children}) => (
+  <div className='nom-btn-toolbar'>{children}</div>
+);
+
+/**
+ * Button Group
+ * 
+ * Used to group a bunch of buttons together, extra classes can be passed
+ * 
+ * @param {any} {children,ariaLabel,className} 
+ */
+const ButtonGroup  = ({children,ariaLabel,className}) => (
+  <span 
+    className={'nom-btn-group ' + className} 
+    role='group' 
+    aria-label={ariaLabel}>
+    {children}
+  </span>
+);
+
+/**
+ * Button
+ * 
+ * The Button component can either be treated as a React-Router Link or a 
+ * be given an onClick callback. All buttons must have a title, the title will
+ * be used as the label for the button and also child of the button if children
+ * are not provided
+ * 
+ * @param {any} {id,children,type='primary',className,value,onClick,disabled,title,to,style} 
+ * @returns {JSX.Element} A Button Element 
+ */
+const Button = ({
+  id,children,type='primary',className,value,
+  onClick,disabled,title,to,style
+}) => {
+  let button = (<button
+      type='button'
+      id={id}
+      title={title}
+      style={style}
+      className={'nom-btn nom-btn-' + type + ' ' + className}
+      value={value}
+      onClick={onClick}
+      disabled={disabled}>
+      {children||title}
+    </button>);
+  if(to){
+    return(<Link to={to}>{button}</Link>)
+  } else {
+    return button;
+  }
+}
+
+//Prop Types - for stricter typing
+Button.propTypes = {
+  title: PropTypes.string.isRequired
+};
+
