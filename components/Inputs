@@ -1,0 +1,305 @@
+/**
+ * Components used to gather user input
+ * 
+ * @module Common/Input Components
+ */
+
+// JS Dependencies
+import React from 'react';
+import Slider from 'rc-slider';
+import Toggle from 'react-toggle';
+import Select from 'react-select';
+import Flatpickr from 'react-flatpickr'
+
+// Utility Functions
+import {underscoreToStartCase} from 'lib/formatter';
+
+// CSS Dependencies
+import './buttons.css';
+import 'react-toggle/style.css';
+import 'css/react-select.css';
+import 'flatpickr/dist/flatpickr.css';
+import './inputs.css';
+
+// Exports
+export {
+  TextInput,
+  DropDownInput,
+  TextAreaInput,
+  MultiToggleInput,
+  ToggleInput,
+  CheckboxInput,
+  AutoCompleteInput,
+  AutoCompleteLdapInput,
+  DateInput
+}
+
+/**
+ * Generates a standard input field
+ * 
+ * @class TextInput
+ * @param {props} {id,label,readOnly,onChange,value,className='',placeholder,style} 
+ * @returns {JSXElement}
+ */
+const TextInput = ({id,label,readOnly,onChange,value,className='',placeholder,style}) => (
+  <div className='input-components-section' style={style}>
+    <label htmlFor={id}>
+      {label}
+    </label>
+    <input id={id} type="text" value={value} className={`input-component-form ${className}`} placeholder={placeholder} onChange={onChange} readOnly={readOnly}/>
+  </div>
+)
+
+/**
+ * Generates a checkbox input field
+ * 
+ * @class CheckboxInput
+ * @param {props} {id,label,onChange} 
+ * @returns {JSXElement}
+ */
+const CheckboxInput = ({id,label,onChange,checked}) => {
+  return(
+    <div className="input-component-checkbox">
+    <label htmlFor={id}> {label} </label>
+    <input id={id} checked={checked} className="input-checkbox-override" type="checkbox" onChange={onChange}></input>
+    </div>
+  )
+};
+
+/**
+ * Generates a synchronous drop down input box
+ * 
+ * @class DropDownInput
+ * @param {props} {id,label,readOnly,onChange,defaultValue,value,values=[],className=''} 
+ * @returns {JSXElement}
+ */
+const DropDownInput = ({id,label,readOnly,onChange, onClick,defaultValue,value,valueFormatter,values=[],className=''}) => {
+  valueFormatter = valueFormatter || underscoreToStartCase;
+  let options = values.map(v=><option key={v} value={v}>{valueFormatter(v)}</option>)
+  return(
+    <div className={"input-components-section "+className}>
+      <label htmlFor={id}>
+        {label}
+      </label>
+    <select id={id} className="input-component-form" disabled={readOnly} onClick={onClick} onChange={onChange} value={value} defaultValue={defaultValue}>
+      {options}
+    </select>
+    </div>)
+  };
+
+/**
+ * Generates a date picker
+ * 
+ * @class DateInput
+ * @param {props} {id,label,readOnly,onChange,value} 
+ * @returns {JSXElement}
+ */
+const DateInput = ({id,label,readOnly,onChange,value}) => {
+  return(
+    <div className="input-components-section">
+      <label htmlFor={id}>
+        {label}
+      </label>
+    {readOnly ?
+      (<input id={id} type="text" value={value} className="input-component-form" readOnly={readOnly}/>) :
+      (<Flatpickr
+        data-enable-time
+        options={{
+          time_24hr:true,
+          wrap:true
+        }}
+        className="input-component"
+        value={value}
+        onChange={(date,value,picker)=>onChange({target:picker.input})}>
+        <input id={id} className="input-component-form" type='text' data-input/>
+        <button className='nom-btn' type='button' data-clear>Clear</button>
+      </Flatpickr>)}
+    </div>
+  );
+};
+
+/**
+ * Generates a Text Area Input (Draggable in Chrome)
+ * 
+ * @class TextAreaInput
+ * @param {any} {id,label,readOnly,onChange,rows=8,value}
+ * @returns {JSXElement}
+ */
+const TextAreaInput = ({id,label,readOnly,onChange,rows=8,defaultValue,value,style}) => (
+  <div className="input-components-section" style={style}>
+    <label htmlFor={id}>
+      {label}
+    </label>
+    <textarea id={id} rows={rows} defaultValue={defaultValue} value={value} className="input-component-form" aria-label={id} onChange={onChange} readOnly={readOnly}/>
+  </div>
+)
+
+/**
+ * Generates a multitoggle input, this is a slider that can take several options
+ * 
+ * @class MultiToggleInput
+ * @param {props} {id,label,readOnly,onChange,value} 
+ * @returns {JSXElement}
+ */
+const MultiToggleInput = ({id,label,readOnly,onChange,value}) => {
+  let marks = {
+    0: 'Low',
+    1: 'Medium',
+    2: 'High'
+  }
+  return(
+    <div className="input-components-section">
+      <label htmlFor={id}>
+        {label}
+      </label>
+      <div style={{padding:"0px 10px"}}>
+      <Slider id={id} min={0} max={2} value={value} onChange={onChange} marks={marks} disabled={readOnly}/>
+      </div>
+    </div>
+)};
+
+/**
+ * Slider with binary options
+ * 
+ * @class ToggleInput
+ * @param {props} {id,label,readOnly,onChange,value} 
+ * @returns {JSXElement}
+ */
+const ToggleInput = ({id,label,readOnly,onChange,value}) => {
+  return(
+    <div className="input-components-section">
+      <div>
+      <label htmlFor={id}>
+        {label}
+      </label>
+    </div>
+      <Toggle
+        id={id}
+        checked={value}
+        onChange={onChange}
+        disabled={readOnly}/>
+    </div>
+  )
+}
+
+/**
+ * Autocompletion input box - this can be both asynchronous or synchronous. It
+ * can also return either one value or multiple for a multipicker 
+ * 
+ * @class AutoCompleteInput
+ * @param {props} {id,label,readOnly,value,options,onChange,multi=true,loadOptions} 
+ * @returns {JSXElement}
+ */
+const AutoCompleteInput = ({id,label,readOnly,value,options,onChange,multi=true,loadOptions}) => {
+  let Field = loadOptions ? Select.Async : Select;
+  return(
+    <div className="input-components-section">
+      <label htmlFor={id}>
+        {label}
+      </label>
+      <Field
+        id={id}
+        name={`${id}-field`}
+        value={value}
+        options={options}
+        onChange={onChange}
+        multi={multi}
+        loadOptions={loadOptions}
+        disabled={readOnly}
+      />
+    </div>
+  )
+}
+
+const LdapEntry = ({ldapid, employeeID, name, division})=>
+(<div className='ldap-select'>
+    <div className="ldap-badge">
+      <img className="ldap-image" width="50px" src={"http://intranet.nomuranow.com/technology/peoplesearch/EmpImage?userId=" + ldapid}/>
+    </div>
+    <div className='ldap-details'>
+    <div className='ldap-employeeid'> {employeeID} </div>
+    <div className='ldap-name'> {name} </div>
+    <div className='ldap-division'> {division} </div>
+    </div>
+</div>)
+
+const LdapSelection = (props)=>{
+  let labels = props.value.label.split(':');
+  return(<LdapEntry
+    ldapid={props.value.value}
+    employeeID={labels[0]}
+    name={labels[1]}
+    division={labels[2]}
+  />)
+}
+
+// class LdapOption extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.handleMouseDown = this.handleMouseDown.bind(this);
+//     this.handleMouseEnter = this.handleMouseEnter.bind(this);
+//     this.handleMouseMove = this.handleMouseMove.bind(this);
+//   }
+//   handleMouseDown (event) {
+//     event.preventDefault();
+//     event.stopPropagation();
+//     this.props.onSelect(this.props.option, event);
+//   }
+
+//   handleMouseEnter (event) {
+//     this.props.onFocus(this.props.option, event);
+//   }
+
+//   handleMouseMove (event) {
+//     if (this.props.isFocused) return;
+//     this.props.onFocus(this.props.option, event);
+//   }
+
+//   render(){
+//     let labels = this.props.option.label.split(':');
+//     return(
+//       <div
+//         className='ldap-option'
+//         onMouseDown={this.handleMouseDown}
+// 				onMouseEnter={this.handleMouseEnter}
+// 				onMouseMove={this.handleMouseMove}>
+//         <LdapEntry
+//           ldapid={this.props.option.value}
+//           employeeID={labels[0]}
+//           name={labels[1]}
+//           division={labels[2]}
+//         />
+//       </div>)
+//   }
+
+// }
+
+/**
+ * Similar to AutoComplete, however it generates an LDAP image for whoever has 
+ * been selected
+ * 
+ * @param {props} {id,label,readOnly,value,options,onChange,multi=true,loadOptions} 
+ * @returns {JSXElement}
+ */
+const AutoCompleteLdapInput = ({id,label,readOnly,value,options,onChange,multi=true,loadOptions}) => {
+  let Field = loadOptions ? Select.Async : Select;
+  return(
+    <div className="input-components-section">
+      <label htmlFor={id}>
+        {label}
+      </label>
+      <Field
+        id={id}
+        name={`${id}-field`}
+        value={value}
+        valueComponent={LdapSelection}
+        options={options}
+        onChange={onChange}
+        multi={multi}
+        loadOptions={loadOptions}
+        disabled={readOnly}
+        filterOptions={loadOptions ? x=>x: null}
+      />
+    </div>
+  )
+}
