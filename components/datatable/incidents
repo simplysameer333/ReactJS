@@ -1,0 +1,93 @@
+import React from 'react';
+
+//Components
+import CurrentIncidentBanner from 'components/incidents/Banner';
+import Grid from 'components/incidents/Grid';
+
+//Functions
+import { nextMapping } from 'lib/formatter';
+import { duplicateAndReplaceKeys } from 'lib/utils';
+
+export default class IncidentContainer extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentIncident: props.incident,
+      incidents: [],
+      isLoaded:false,
+      filter: {
+        name:'',
+        startDate:'',
+        endDate:'',
+        location:'',
+        severity:'',
+        drill:''
+      },
+      sort:{'startDate':'DESC'}
+    }
+    this.updateData = this.updateData.bind(this);
+    this.updateFilter = this.updateFilter.bind(this);
+    this.updateSort = this.updateSort.bind(this);
+    this.clearFilter = this.clearFilter.bind(this);
+  }
+
+  componentDidMount(){
+    this.props.updateIncidents(
+      false,
+      this.state.filter,
+      this.state.sort,
+      x=>x,
+      true
+    );
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({currentIncident:nextProps.incident});
+  }
+
+  updateData(debounce=false,cb = x=>x) {
+    this.props.updateIncidents(debounce,this.state.filter,this.state.sort,cb);
+  }
+
+  updateFilter(filter){
+    let newFilter = Object.assign({},this.state.filter,filter);
+    this.setState({filter:newFilter},()=>this.updateData(true));
+  }
+
+  updateSort(sort){
+    let newSort = {[sort] : nextMapping('sort',this.state.sort[sort])};
+    this.setState({sort:newSort},()=>this.updateData(false));
+  }
+
+  clearFilter(){
+    let newFilter = duplicateAndReplaceKeys(this.state.filter,'');
+    let newSort = duplicateAndReplaceKeys(this.state.sort,'');
+    this.setState({
+      filter: newFilter,
+      sort: newSort
+    },()=>this.updateData());
+  }
+
+  render() {
+    let { user, setActiveIncident, incidents } = this.props;
+    let { currentIncident, filter, sort } = this.state;
+
+    return (
+      <div className="container flex">
+        <CurrentIncidentBanner currentIncident={currentIncident} />
+        <Grid
+          myRole={user.role}
+          data={incidents.data}
+          isLoaded={incidents.isLoaded}
+          filter={filter}
+          sort={sort}
+          onFilter={this.updateFilter}
+          onSort={this.updateSort}
+          clearFilter={this.clearFilter}
+          setActiveIncident={setActiveIncident}
+        />
+      </div>
+    )
+  }
+}
