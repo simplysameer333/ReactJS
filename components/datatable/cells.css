@@ -1,0 +1,19 @@
+.data-cell-align{
+  text-align: center;
+  margin: 0 0;
+}
+
+.calls{
+  padding: 0px 3px;
+  text-align: center;
+}
+
+.calls.urgent{
+  border-radius: 3px;
+  background-color: #CA2420;
+  color: white;
+}
+
+.test{
+  border-bottom: 1px solid red;
+}
