@@ -1,215 +1,215 @@
-/**
- * Components used to gather user input
- * 
- * @module Common/Input Components
- */
+return <React.Fragment> <tr key="first"><td>First</td></tr>,<tr key="second"><td>Second</td></tr></React.Fragment>
 
-// JS Dependencies
-import React from 'react';
-import Slider from 'rc-slider';
-import Toggle from 'react-toggle';
-import Select from 'react-select';
-import Flatpickr from 'react-flatpickr'
+JSX that embeds raw HTML templates inside JavaScript code. JSX code by itself cannot be read by the browser; it must be transpiled into traditional 
 
-// Utility Functions
-import {underscoreToStartCase} from 'lib/formatter';
+JavaScript using tools like Babel and webpack.
 
-// CSS Dependencies
-import './buttons.css';
-import 'react-toggle/style.css';
-import 'css/react-select.css';
-import 'flatpickr/dist/flatpickr.css';
-import './inputs.css';
+performance (Virtual dom and only given component or its part is render)
+code’s readability increases
+writing UI test cases become extremely easy
+Easy to learn.
 
-// Exports
-export {
-  TextInput,
-  DropDownInput,
-  TextAreaInput,
-  MultiToggleInput,
-  ToggleInput,
-  CheckboxInput,
-  AutoCompleteInput,
-  AutoCompleteLdapInput,
-  DateInput
-}
+Props => Properties, immutable, passed down to child
 
-/**
- * Generates a standard input field
- * 
- * @class TextInput
- * @param {props} {id,label,readOnly,onChange,value,className='',placeholder,style} 
- * @returns {JSXElement}
- */
-const TextInput = ({id,label,readOnly,onChange,value,className='',placeholder,style}) => (
-  <div className='input-components-section' style={style}>
-    <label htmlFor={id}>
-      {label}
-    </label>
-    <input id={id} type="text" value={value} className={`input-component-form ${className}`} placeholder={placeholder} onChange={onChange} readOnly={readOnly}/>
-  </div>
-)
+States => data sources, states are the objects which determine components rendering and behavior, this.state(), Mutatble, {this.setState({name:'sam'})}
 
-/**
- * Generates a checkbox input field
- * 
- * @class CheckboxInput
- * @param {props} {id,label,onChange} 
- * @returns {JSXElement}
- */
-const CheckboxInput = ({id,label,onChange,checked}) => {
-  return(
-    <div className="input-component-checkbox">
-    <label htmlFor={id}> {label} </label>
-    <input id={id} checked={checked} className="input-checkbox-override" type="checkbox" onChange={onChange}></input>
-    </div>
-  )
-};
+	
+Phases =>
+	Mounting -> constructor, getDerivedStateFromProps, render,componentDidMount, 
+	Update -> componentWillReceiveProps, getDerivedStateFromProps, shouldComponentUpdate, getSnapshotBeforeUpdate, componentDidUpdate
+	Unmount -> componentWillUnmount
+	Error Handling -> componentDidCatch(error, info)
 
-/**
- * Generates a synchronous drop down input box
- * 
- * @class DropDownInput
- * @param {props} {id,label,readOnly,onChange,defaultValue,value,values=[],className=''} 
- * @returns {JSXElement}
- */
-const DropDownInput = ({id,label,readOnly,onChange, onClick,defaultValue,value,valueFormatter,values=[],className=''}) => {
-  valueFormatter = valueFormatter || underscoreToStartCase;
-  let options = values.map(v=><option key={v} value={v}>{valueFormatter(v)}</option>)
-  return(
-    <div className={"input-components-section "+className}>
-      <label htmlFor={id}>
-        {label}
-      </label>
-    <select id={id} className="input-component-form" disabled={readOnly} onClick={onClick} onChange={onChange} value={value} defaultValue={defaultValue}>
-      {options}
-    </select>
-    </div>)
-  };
+Events => <div onClick={this.show}>Click Me!</div>  show(evt) {    // code     },   
 
-/**
- * Generates a date picker
- * 
- * @class DateInput
- * @param {props} {id,label,readOnly,onChange,value} 
- * @returns {JSXElement}
- */
-const DateInput = ({id,label,readOnly,onChange,value}) => {
-  return(
-    <div className="input-components-section">
-      <label htmlFor={id}>
-        {label}
-      </label>
-    {readOnly ?
-      (<input id={id} type="text" value={value} className="input-component-form" readOnly={readOnly}/>) :
-      (<Flatpickr
-        data-enable-time
-        options={{
-          time_24hr:true,
-          wrap:true
-        }}
-        className="input-component"
-        value={value}
-        onChange={(date,value,picker)=>onChange({target:picker.input})}>
-        <input id={id} className="input-component-form" type='text' data-input/>
-        <button className='nom-btn' type='button' data-clear>Clear</button>
-      </Flatpickr>)}
-    </div>
-  );
-};
+Refs => References => Updaing infor, passing info, warppering components, third party DOM libraries etc
 
-/**
- * Generates a Text Area Input (Draggable in Chrome)
- * 
- * @class TextAreaInput
- * @param {any} {id,label,readOnly,onChange,rows=8,value}
- * @returns {JSXElement}
- */
-const TextAreaInput = ({id,label,readOnly,onChange,rows=8,defaultValue,value,style}) => (
-  <div className="input-components-section" style={style}>
-    <label htmlFor={id}>
-      {label}
-    </label>
-    <textarea id={id} rows={rows} defaultValue={defaultValue} value={value} className="input-component-form" aria-label={id} onChange={onChange} readOnly={readOnly}/>
-  </div>
-)
+FOrm Submit => <form onSubmit={this.handleSubmit}>
+		handleSubmit(event) {    alert('A name was submitted: ' + this.state.value);    event.preventDefault(); }
 
-/**
- * Generates a multitoggle input, this is a slider that can take several options
- * 
- * @class MultiToggleInput
- * @param {props} {id,label,readOnly,onChange,value} 
- * @returns {JSXElement}
- */
-const MultiToggleInput = ({id,label,readOnly,onChange,value}) => {
-  let marks = {
-    0: 'Low',
-    1: 'Medium',
-    2: 'High'
-  }
-  return(
-    <div className="input-components-section">
-      <label htmlFor={id}>
-        {label}
-      </label>
-      <div style={{padding:"0px 10px"}}>
-      <Slider id={id} min={0} max={2} value={value} onChange={onChange} marks={marks} disabled={readOnly}/>
-      </div>
-    </div>
-)};
 
-/**
- * Slider with binary options
- * 
- * @class ToggleInput
- * @param {props} {id,label,readOnly,onChange,value} 
- * @returns {JSXElement}
- */
-const ToggleInput = ({id,label,readOnly,onChange,value}) => {
-  return(
-    <div className="input-components-section">
-      <div>
-      <label htmlFor={id}>
-        {label}
-      </label>
-    </div>
-      <Toggle
-        id={id}
-        checked={value}
-        onChange={onChange}
-        disabled={readOnly}/>
-    </div>
-  )
-}
+Uncontrolled Components 	=> CHild Components controllered by parent. Takes values from parent, doesnt ahve thr own state.
+Higher Order Components(HOC) 	=> Resuability, Apstraction. Passing information to function to extandt the usability of it.
+Pure Components => Fast has only render() but only updates when props are chnage [string equal and ref are checkied. DNt just add insert element in array]
+React.memo 	=> The same as the previous one but it works with functional components.	
+Render props 	=>  when a component takes a function that returns a React element and calls it instead of implementing its own render logic.
+Context 	=> Passing data from Parent to CHild
+useState & useEffect => Hook lets you perform side effects in function components.
+			const [count, setCount] = useState(0); and 
+			useEffect(() => {     // Update the document title using the browser API
+				    document.title = `You clicked ${count} times`;  });
 
-/**
- * Autocompletion input box - this can be both asynchronous or synchronous. It
- * can also return either one value or multiple for a multipicker 
- * 
- * @class AutoCompleteInput
- * @param {props} {id,label,readOnly,value,options,onChange,multi=true,loadOptions} 
- * @returns {JSXElement}
- */
-const AutoCompleteInput = ({id,label,readOnly,value,options,onChange,multi=true,loadOptions}) => {
-  let Field = loadOptions ? Select.Async : Select;
-  return(
-    <div className="input-components-section">
-      <label htmlFor={id}>
-        {label}
-      </label>
-      <Field
-        id={id}
-        name={`${id}-field`}
-        value={value}
-        options={options}
-        onChange={onChange}
-        multi={multi}
-        loadOptions={loadOptions}
-        disabled={readOnly}
-      />
-    </div>
-  )
-}
+keys => Keys are used for identifying unique Virtual DOM Elements with their corresponding data driving the UI
+
+
+
+
+Testing
+	Jest (15.8) and Enzyme (2.8)
+		describe("LifeLine Component",()=>{
+    
+		it("should render a loading state if there is no status",()=>{
+        
+			const lifeline = shallow(<LifeLine visible={true}/>);
+        
+		expect(lifeline.find('.life-line-bar').hasClass('ll-loading')
+ )
+		.toEqual(true);
+    });  expect(context.state).toEqual(expectedState);  hassCLass()
+
+	faker
+	Shallow
+
+BUILD-
+	babel => (core,preset-env,preset-react,loader)  convert E5 and E6 JSX standards to browser specific js
+	webpack=>Webpack is most widely used and an accepted module bundler and task runner throughout React.js community.
+		webpack, webpack-cli, webpack-dev-server, html-webpack-plugin
+	return <React.Fragment> <tr key="first"><td>First</td></tr>,<tr key="second"><td>Second</td></tr></React.Fragment>
+
+JSX that embeds raw HTML templates inside JavaScript code. JSX code by itself cannot be read by the browser; it must be transpiled into traditional 
+
+JavaScript using tools like Babel and webpack.
+
+performance (Virtual dom and only given component or its part is render)
+code’s readability increases
+writing UI test cases become extremely easy
+Easy to learn.
+
+Props => Properties, immutable, passed down to child
+
+States => data sources, states are the objects which determine components rendering and behavior, this.state(), Mutatble, {this.setState({name:'sam'})}
+
+	
+Phases =>
+	Mounting -> constructor, getDerivedStateFromProps, render,componentDidMount, 
+	Update -> componentWillReceiveProps, getDerivedStateFromProps, shouldComponentUpdate, getSnapshotBeforeUpdate, componentDidUpdate
+	Unmount -> componentWillUnmount
+	Error Handling -> componentDidCatch(error, info)
+
+Events => <div onClick={this.show}>Click Me!</div>  show(evt) {    // code     },   
+
+Refs => References => Updaing infor, passing info, warppering components, third party DOM libraries etc
+
+FOrm Submit => <form onSubmit={this.handleSubmit}>
+		handleSubmit(event) {    alert('A name was submitted: ' + this.state.value);    event.preventDefault(); }
+
+
+Uncontrolled Components 	=> CHild Components controllered by parent. Takes values from parent, doesnt ahve thr own state.
+Higher Order Components(HOC) 	=> Resuability, Apstraction. Passing information to function to extandt the usability of it.
+Pure Components => Fast has only render() but only updates when props are chnage [string equal and ref are checkied. DNt just add insert element in array]
+React.memo 	=> The same as the previous one but it works with functional components.	
+Render props 	=>  when a component takes a function that returns a React element and calls it instead of implementing its own render logic.
+Context 	=> Passing data from Parent to CHild
+useState & useEffect => Hook lets you perform side effects in function components.
+			const [count, setCount] = useState(0); and 
+			useEffect(() => {     // Update the document title using the browser API
+				    document.title = `You clicked ${count} times`;  });
+
+keys => Keys are used for identifying unique Virtual DOM Elements with their corresponding data driving the UI
+
+
+
+
+Testing
+	Jest (15.8) and Enzyme (2.8)
+		describe("LifeLine Component",()=>{
+    
+		it("should render a loading state if there is no status",()=>{
+        
+			const lifeline = shallow(<LifeLine visible={true}/>);
+        
+		expect(lifeline.find('.life-line-bar').hasClass('ll-loading')
+ )
+		.toEqual(true);
+    });  expect(context.state).toEqual(expectedState);  hassCLass()
+
+	faker
+	Shallow
+
+BUILD-
+	babel => (core,preset-env,preset-react,loader)  convert E5 and E6 JSX standards to browser specific js
+	webpack=>Webpack is most widely used and an accepted module bundler and task runner throughout React.js community.
+		webpack, webpack-cli, webpack-dev-server, html-webpack-plugin
+	return <React.Fragment> <tr key="first"><td>First</td></tr>,<tr key="second"><td>Second</td></tr></React.Fragment>
+
+JSX that embeds raw HTML templates inside JavaScript code. JSX code by itself cannot be read by the browser; it must be transpiled into traditional 
+
+JavaScript using tools like Babel and webpack.
+
+performance (Virtual dom and only given component or its part is render)
+code’s readability increases
+writing UI test cases become extremely easy
+Easy to learn.
+
+Props => Properties, immutable, passed down to child
+
+States => data sources, states are the objects which determine components rendering and behavior, this.state(), Mutatble, {this.setState({name:'sam'})}
+
+	
+Phases =>
+	Mounting -> constructor, getDerivedStateFromProps, render,componentDidMount, 
+	Update -> componentWillReceiveProps, getDerivedStateFromProps, shouldComponentUpdate, getSnapshotBeforeUpdate, componentDidUpdate
+	Unmount -> componentWillUnmount
+	Error Handling -> componentDidCatch(error, info)
+
+Events => <div onClick={this.show}>Click Me!</div>  show(evt) {    // code     },   
+
+Refs => References => Updaing infor, passing info, warppering components, third party DOM libraries etc
+
+FOrm Submit => <form onSubmit={this.handleSubmit}>
+		handleSubmit(event) {    alert('A name was submitted: ' + this.state.value);    event.preventDefault(); }
+
+
+Uncontrolled Components 	=> CHild Components controllered by parent. Takes values from parent, doesnt ahve thr own state.
+Higher Order Components(HOC) 	=> Resuability, Apstraction. Passing information to function to extandt the usability of it.
+Pure Components => Fast has only render() but only updates when props are chnage [string equal and ref are checkied. DNt just add insert element in array]
+React.memo 	=> The same as the previous one but it works with functional components.	
+Render props 	=>  when a component takes a function that returns a React element and calls it instead of implementing its own render logic.
+Context 	=> Passing data from Parent to CHild
+useState & useEffect => Hook lets you perform side effects in function components.
+			const [count, setCount] = useState(0); and 
+			useEffect(() => {     // Update the document title using the browser API
+				    document.title = `You clicked ${count} times`;  });
+
+keys => Keys are used for identifying unique Virtual DOM Elements with their corresponding data driving the UI
+
+
+
+
+Testing
+	Jest (15.8) and Enzyme (2.8)
+		describe("LifeLine Component",()=>{
+    
+		it("should render a loading state if there is no status",()=>{
+        
+			const lifeline = shallow(<LifeLine visible={true}/>);
+        
+		expect(lifeline.find('.life-line-bar').hasClass('ll-loading')
+ )
+		.toEqual(true);
+    });  expect(context.state).toEqual(expectedState);  hassCLass()
+
+	faker
+	Shallow
+  
+
+
+BUILD-
+	babel => (core,preset-env,preset-react,loader)  convert E5 and E6 JSX standards to browser specific js
+	webpack=>Webpack is most widely used and an accepted module bundler and task runner throughout React.js community.
+		webpack, webpack-cli, webpack-dev-server, html-webpack-plugin
+	expect(lifeline.find('.life-line-bar').hasClass('ll-loading')
+ )
+		.toEqual(true);
+    });  expect(context.state).toEqual(expectedState);  hassCLass()
+
+	faker
+	Shallow
+
+BUILD-
+	babel => (core,preset-env,preset-react,loader)  convert E5 and E6 JSX standards to browser specific js
+	webpack=>Webpack is most widely used and an accepted module bundler and task runner throughout React.js community.
+		webpack, webpack-cli, webpack-dev-server, html-webpack-plugin
 
 const LdapEntry = ({ldapid, employeeID, name, division})=>
 (<div className='ldap-select'>
@@ -218,7 +218,7 @@ const LdapEntry = ({ldapid, employeeID, name, division})=>
     </div>
     <div className='ldap-details'>
     <div className='ldap-employeeid'> {employeeID} </div>
-    <div className='ldap-name'> {name} </div>
+    <div className='ldap-name'> {team} </div>
     <div className='ldap-division'> {division} </div>
     </div>
 </div>)
